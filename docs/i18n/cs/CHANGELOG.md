@@ -4,6 +4,82 @@
 
 ---
 
+## [2.7.8] — 18. 3. 2026
+
+> Sprint: Chyba ukládání rozpočtu + funkce kombinovaného agenta v uživatelském rozhraní + oprava zabezpečení tagu omniModel.
+
+### 🐛 Opravy chyb
+
+- **fix(budget)** : „Uložit limity“ již nevrací chybu 422 — `warningThreshold` se nyní správně odesílá jako zlomek (0–1) místo procenta (0–100) (#451)
+- **oprava(kombinace)** : interní tag mezipaměti `<omniModel>` je nyní odstraněn před přeposíláním požadavků poskytovatelům, čímž se zabrání přerušení relace mezipaměti (#454)
+
+### ✨ Funkce
+
+- **feat(combos)** : Do modálního okna pro vytváření/úpravy komb přidána sekce Funkce agenta – zpřístupnění přepsání `system_message` , `tool_filter_regex` a `context_cache_protection` přímo z dashboardu (#454)
+
+---
+
+## [2.7.7] — 18. 3. 2026
+
+> Sprint: Pád Dockeru pino, oprava workeru Codex CLI responses, synchronizace zámků balíčků.
+
+### 🐛 Opravy chyb
+
+- **oprava(docker)** : `pino-abstract-transport` a `pino-pretty` jsou nyní explicitně kopírovány ve fázi Docker Runner — Samostatné trasování Next.js tyto závislosti peerů přehlíží, což způsobuje pád `Cannot find module pino-abstract-transport` při spuštění (#449)
+- **fix(responses)** : Odstranění `initTranslators()` z trasy `/v1/responses` — worker Next.js `the worker has exited` uncaughtException při požadavcích Codex CLI (#450)
+
+### 🔧 Údržba
+
+- **chore(deps)** : `package-lock.json` je nyní commitován při každém upgradu verze, aby se zajistilo, že Docker `npm ci` použije přesné verze závislostí.
+
+---
+
+## [2.7.5] — 18. 3. 2026
+
+> Sprint: Vylepšení uživatelského rozhraní a oprava kontroly stavu rozhraní Windows CLI.
+
+### 🐛 Opravy chyb
+
+- **fix(ux)** : Zobrazit na přihlašovací stránce nápovědu k výchozímu heslu — noví uživatelé nyní pod polem pro zadání hesla vidí `"Default password: 123456"` (#437)
+- **fix(cli)** : Claude CLI a další nástroje nainstalované npm jsou nyní správně detekovány jako spustitelné ve Windows — spawn používá `shell:true` k rozpoznání `.cmd` wrapperů přes PATHEXT (#447)
+
+---
+
+## [2.7.4] — 18. 3. 2026
+
+> Sprint: Panel vyhledávacích nástrojů, opravy i18n, limity Copilota, oprava validace Serperu.
+
+### 🚀 Vlastnosti
+
+- **feat(search)** : Přidáno hřiště pro vyhledávání (10. koncový bod), stránka s nástroji pro vyhledávání s porovnáním poskytovatelů/kanálovým přeřazením/historií vyhledávání, lokální směrování pro přeřazení, ochrana autorizace ve vyhledávacím API (#443 od @Regis-RCR)
+    - Nová trasa: `/dashboard/search-tools`
+    - Položka postranního panelu v sekci Ladění
+    - `GET /api/search/providers` a `GET /api/search/stats` s ochranou autorizace
+    - Lokální směrování provider_nodes pro `/v1/rerank`
+    - 30+ klíčů i18n ve vyhledávacím jmenném prostoru
+
+### 🐛 Opravy chyb
+
+- **fix(search)** : Oprava normalizátoru Brave News (vracel 0 výsledků), vynucení zkrácení max_results po normalizaci, oprava URL pro načítání stránek z koncových bodů (#443 od @Regis-RCR)
+- **fix(analytics)** : Lokalizace popisků dnů/dat v analytických nástrojích — nahrazení pevně zakódovaných portugalských řetězců pomocí `Intl.DateTimeFormat(locale)` (#444 od @hijak)
+- **oprava(copilot)** : Oprava zobrazení typu účtu GitHub Copilot, filtrování zavádějících řádků neomezených kvót z dashboardu limitů (#445 od @hijak)
+- **oprava(poskytovatelé)** : Zastavit odmítání platných klíčů Serper API – odpovědi jiné než 4xx považovat za platné ověřování (#446 od @hijak)
+
+---
+
+## [2.7.3] — 18. 3. 2026
+
+> Sprint: Oprava záložní kvóty pro přímé API Codexu.
+
+### 🐛 Opravy chyb
+
+- **oprava(codex)** : Blokování týdenních vyčerpávajících účtů v přímém záložním rozhraní API (#440)
+    - Porovnávání prefixů `resolveQuotaWindow()` : `"weekly"` nyní odpovídá klíčům mezipaměti `"weekly (7d)"`
+    - `applyCodexWindowPolicy()` správně vynucuje přepínání `useWeekly` / `use5h`
+    - 4 nové regresní testy (celkem 766)
+
+---
+
 ## [2.7.2] — 18. 3. 2026
 
 > Sprint: Opravy kontrastu uživatelského rozhraní v režimu Light.
